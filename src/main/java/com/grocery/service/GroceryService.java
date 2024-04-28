@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface GroceryService {
 
-    Long save(GroceryCO groceryCO);
+    Long save(RoleType roleType, GroceryCO groceryCO);
 
     List<GroceryVO> getAll(RoleType roleType);
 
     void delete(Long id, RoleType roleType);
 
-    void update(Long id, GroceryUpdateCO groceryUpdateCO);
+    void update(Long id, RoleType roleType, GroceryUpdateCO groceryUpdateCO);
 
     List<GroceryVO> getAllAvailableGrocery(RoleType roleType);
 

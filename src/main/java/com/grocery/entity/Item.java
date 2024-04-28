@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -25,13 +26,10 @@ public class Item {
     @Column(nullable = false)
     private String name;
 
-    @NotEmpty
     @NotNull
     @Column(nullable = false)
     private Double price;
 
-    @NotEmpty
-    @NotNull
     @Column(nullable = false)
     private int inventory;
 }

@@ -8,10 +8,10 @@ import com.grocery.entity.OrderData;
 import com.grocery.entity.OrderItemMapping;
 import com.grocery.entity.UserData;
 import com.grocery.enums.RoleType;
-import com.grocery.repository.GroceryRepository;
-import com.grocery.repository.OrderGroceryRepository;
+import com.grocery.repository.ItemRepository;
+import com.grocery.repository.OrderDataRepository;
 import com.grocery.repository.OrderItemMappingRepository;
-import com.grocery.repository.UserRepository;
+import com.grocery.repository.UserDataRepository;
 import com.grocery.service.GroceryService;
 import com.grocery.vo.GroceryVO;
 import org.springframework.stereotype.Service;
@@ -24,15 +24,15 @@ import java.util.stream.Collectors;
 @Service
 public class GroceryServiceImpl implements GroceryService {
 
-    private GroceryRepository itemRepository;
+    private ItemRepository itemRepository;
 
-    private final OrderGroceryRepository orderRepository;
+    private final OrderDataRepository orderRepository;
 
-    private final UserRepository userRepository;
+    private final UserDataRepository userRepository;
 
     private final OrderItemMappingRepository orderItemMappingRepository;
 
-    public GroceryServiceImpl(GroceryRepository groceryRepository, OrderGroceryRepository orderGroceryRepository, UserRepository userRepository, OrderItemMappingRepository orderItemMappingRepository) {
+    public GroceryServiceImpl(ItemRepository groceryRepository, OrderDataRepository orderGroceryRepository, UserDataRepository userRepository, OrderItemMappingRepository orderItemMappingRepository) {
         this.itemRepository = groceryRepository;
         this.orderRepository = orderGroceryRepository;
         this.userRepository = userRepository;
@@ -40,9 +40,9 @@ public class GroceryServiceImpl implements GroceryService {
     }
 
     @Override
-    public Long save(GroceryCO groceryCO) {
+    public Long save(RoleType roleType, GroceryCO groceryCO) {
         Item grocery = new Item();
-        if(RoleType.ADMIN.equals(groceryCO.getRoleType())){
+        if(RoleType.ADMIN.equals(roleType)){
             grocery.setName(groceryCO.getName());
             grocery.setInventory(groceryCO.getInventory());
             grocery.setPrice(groceryCO.getPrice());
@@ -69,8 +69,8 @@ public class GroceryServiceImpl implements GroceryService {
     }
 
     @Override
-    public void update(Long id, GroceryUpdateCO groceryUpdateCO) {
-        if(RoleType.ADMIN.equals(groceryUpdateCO.getRoleType())) {
+    public void update(Long id, RoleType roleType, GroceryUpdateCO groceryUpdateCO) {
+        if(RoleType.ADMIN.equals(roleType)) {
             Item grocery = findById(id);
             grocery.setId(id);
             grocery.setName(groceryUpdateCO.getName());
@@ -96,8 +96,8 @@ public class GroceryServiceImpl implements GroceryService {
         if(RoleType.USER.equals(roleType)) {
             UserData userData = userRepository.findById(orderCO.getUserId()).orElseThrow(() ->
                     new IllegalArgumentException("user not found for the given id"));
-            for(Map.Entry<Long, Integer> map: orderCO.getQuantity().entrySet()){
-                Long itemId = map.getKey();
+            for(Map.Entry<String, Integer> map: orderCO.getQuantity().entrySet()){
+                Long itemId = Long.parseLong(map.getKey());
                 Integer quantity = map.getValue();
                 Item item = findById(itemId);
                 if(quantity > 1){
@@ -117,10 +117,10 @@ public class GroceryServiceImpl implements GroceryService {
         return orderData.getId();
     }
 
-    private void saveOrderItemMapping(Map<Long, Integer> items, Long orderId){
+    private void saveOrderItemMapping(Map<String, Integer> items, Long orderId){
         List<OrderItemMapping> orderItemMappings = new ArrayList<>();
-        for(Map.Entry<Long, Integer> map: items.entrySet()) {
-            Long itemId = map.getKey();
+        for(Map.Entry<String, Integer> map: items.entrySet()) {
+            Long itemId = Long.parseLong(map.getKey());;
             Integer quantity = map.getValue();
             OrderItemMapping orderItemMapping = new OrderItemMapping(orderId, itemId, quantity);
             orderItemMappings.add(orderItemMapping);
@@ -130,7 +130,7 @@ public class GroceryServiceImpl implements GroceryService {
 
     private Item findById(Long id){
         return itemRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("Task not found for the given id"));
+                new IllegalArgumentException("Item not found for the given id"));
     }
 
 }

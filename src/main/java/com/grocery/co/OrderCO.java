@@ -8,9 +8,8 @@ import java.util.Map;
 @Data
 public class OrderCO {
 
-    private Map<Long, Integer> quantity;
+    private Map<String, Integer> quantity;
 
     @NotNull
     private Long userId;
-
 }

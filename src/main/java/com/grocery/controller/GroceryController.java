@@ -26,7 +26,7 @@ public class GroceryController {
     @PostMapping("/{roleType}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Long> addGrocery(@NotNull @PathVariable RoleType roleType, @RequestBody GroceryCO groceryCO) {
-        return ResponseEntity.ok(groceryService.save(groceryCO));
+        return ResponseEntity.ok(groceryService.save(roleType, groceryCO));
     }
 
     @GetMapping("/{roleType}")
@@ -44,8 +44,8 @@ public class GroceryController {
 
     @PutMapping("/{roleType}/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity update(@NotNull @PathVariable Long id, @RequestBody GroceryUpdateCO groceryUpdateCO) {
-        groceryService.update(id, groceryUpdateCO);
+    public ResponseEntity update(@NotNull @PathVariable Long id, @RequestBody GroceryUpdateCO groceryUpdateCO, @NotNull @PathVariable RoleType roleType) {
+        groceryService.update(id, roleType, groceryUpdateCO);
         return ResponseEntity.ok().build();
     }
 
